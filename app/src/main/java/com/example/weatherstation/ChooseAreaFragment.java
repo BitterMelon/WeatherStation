@@ -1,6 +1,7 @@
 package com.example.weatherstation;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -105,6 +106,12 @@ public class ChooseAreaFragment extends Fragment {
                 }else if(mCurrentLevel==LEVEL_CITY){
                     mSelectedCity = mCityList.get(position);
                     queryCounties();
+                }else if(mCurrentLevel==LEVEL_COUNTY){
+                    String weatherId = mCountyList.get(position).getWeather_id();
+                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -154,7 +161,7 @@ public class ChooseAreaFragment extends Fragment {
         if(mProvinceList.size()>0){
             mDataList.clear();
             for(Province province:mProvinceList){
-                mDataList.add(province.getProvinceName());
+                mDataList.add(province.getName());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
@@ -170,20 +177,20 @@ public class ChooseAreaFragment extends Fragment {
      * 查询选中省内所有的市，优先从数据库查询，如果没有查询到再去服务器上查询
      */
     private void queryCities(){
-        mTitleText.setText(mSelectedProvince.getProvinceName());
+        mTitleText.setText(mSelectedProvince.getName());
         mBackButton.setVisibility(View.VISIBLE);
         mCityList = LitePal.where("provinceid = ?",String.valueOf(mSelectedProvince.getId()))
                 .find(City.class);
         if(mCityList.size()>0){
             mDataList.clear();
             for(City city:mCityList){
-                mDataList.add(city.getCityName());
+                mDataList.add(city.getName());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
             mCurrentLevel = LEVEL_CITY;
         }else {
-            int provinceCode = mSelectedProvince.getProvinceCode();
+            int provinceCode = mSelectedProvince.getId();
             String address = "http://guolin.tech/api/china/" + provinceCode;
             queryFromServer(address,"city");
         }
@@ -193,20 +200,20 @@ public class ChooseAreaFragment extends Fragment {
      * 查询选中市内所有的县，优先从数据库查询，如果没有查询到再去服务器上查询
      */
     private void queryCounties(){
-        mTitleText.setText(mSelectedCity.getCityName());
+        mTitleText.setText(mSelectedCity.getName());
         mBackButton.setVisibility(View.VISIBLE);
-        mCountyList = LitePal.where("cityid = ?",String.valueOf(mSelectedCity.getId()))
+        mCountyList = LitePal.where("cityid = ?",String.valueOf(mSelectedCity.getCityCode()))
                 .find(County.class);
         if(mCountyList.size()>0){
             mDataList.clear();
             for(County county:mCountyList){
-                mDataList.add(county.getCountyName());
+                mDataList.add(county.getName());
             }
             mAdapter.notifyDataSetChanged();
             mListView.setSelection(0);
             mCurrentLevel = LEVEL_COUNTY;
         }else {
-            int provinceCode = mSelectedProvince.getProvinceCode();
+            int provinceCode = mSelectedProvince.getId();
             int cityCode = mSelectedCity.getCityCode();
             String address = "http://guolin.tech/api/china/" + provinceCode + "/" + cityCode;
             queryFromServer(address,"county");
@@ -244,7 +251,7 @@ public class ChooseAreaFragment extends Fragment {
                 }else if("city".equals(type)){
                     result = Utility.handleCityResponse(responseText,mSelectedProvince.getId());
                 }else if("county".equals(type)){
-                    result = Utility.handleCountyResponse(responseText,mSelectedCity.getId());
+                    result = Utility.handleCountyResponse(responseText,mSelectedCity.getCityCode());
                 }
                 if(result){
                     getActivity().runOnUiThread(new Runnable() {

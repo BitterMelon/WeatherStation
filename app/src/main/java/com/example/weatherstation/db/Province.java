@@ -1,24 +1,24 @@
 package com.example.weatherstation.db;
 
 
+import android.util.Log;
+
 import org.litepal.crud.LitePalSupport;
 
 public class Province extends LitePalSupport {
     private int id;
     private String name;
-    private String provinceName;
-    private int provinceCode;
 
+/*    private String provinceName;
+    private int provinceCode;*/
 
     public String getName() {
-        //provinceName = name;
         return name;
     }
 
     public void setName(String name) {
+        Log.d("Province","调用的Province类的setName()方法");
         this.name = name;
-        //setProvinceName(name);
-        //this.provinceName = name;
     }
 
     public int getId() {
@@ -32,7 +32,7 @@ public class Province extends LitePalSupport {
         //this.provinceCode = id;
     }
 
-    public String getProvinceName() {
+/*    public String getProvinceName() {
         return provinceName;
     }
 
@@ -46,5 +46,5 @@ public class Province extends LitePalSupport {
 
     public void setProvinceCode(int provinceCode) {
         this.provinceCode = provinceCode;
-    }
+    }*/
 }

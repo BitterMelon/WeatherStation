@@ -5,7 +5,7 @@ import org.litepal.crud.LitePalSupport;
 public class City extends LitePalSupport {
     private int id;
     private String name;
-    private String cityName;
+
     private int cityCode;
     private int provinceId;
 
@@ -15,7 +15,6 @@ public class City extends LitePalSupport {
 
     public void setName(String name) {
         this.name = name;
-        cityName = name;
     }
     public int getId() {
         return id;
@@ -23,16 +22,9 @@ public class City extends LitePalSupport {
 
     public void setId(int id) {
         this.id = id;
-        cityCode = id;
     }
 
-    public String getCityName() {
-        return cityName;
-    }
 
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
 
     public int getCityCode() {
         return cityCode;
